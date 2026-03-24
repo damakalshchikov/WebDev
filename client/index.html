@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Share Plants</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <h1>
+    <img src="images/plant.svg" alt="" width="28" height="28" style="vertical-align:middle;margin-right:8px">Share Plants
+  </h1>
+  <nav id="nav-auth">
+    <a data-section="auth">Войти / Регистрация</a>
+  </nav>
+  <nav id="nav-app" style="display:none">
+    <a data-section="catalog">Каталог</a>
+    <a data-section="my-plants">Мои растения</a>
+    <a data-section="compatible">Совместимые</a>
+    <a data-section="my-shares">Обмены</a>
+    <a data-section="history">История</a>
+    <a data-section="reports">Отчёты</a>
+  </nav>
+  <div id="user-info"></div>
+  <button id="btn-logout" class="btn-secondary btn-sm" style="display:none" onclick="logout()">Выйти</button>
+</header>
+
+<main>
+  <div id="error-msg"></div>
+  <div id="success-msg"></div>
+
+  <!-- AUTH -->
+  <section id="auth">
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('login-form', this)">Войти</button>
+      <button class="tab" onclick="showTab('register-form', this)">Регистрация</button>
+    </div>
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <h2>Войти</h2>
+      <label>Email</label>
+      <input type="email" id="login-email" required />
+      <label>Пароль</label>
+      <input type="password" id="login-password" required />
+      <button type="submit" class="btn-primary">Войти</button>
+    </form>
+    <form id="register-form" style="display:none" onsubmit="handleRegister(event)">
+      <h2>Регистрация</h2>
+      <label>Имя пользователя</label>
+      <input type="text" id="reg-username" required />
+      <label>Email</label>
+      <input type="email" id="reg-email" required />
+      <label>Пароль</label>
+      <input type="password" id="reg-password" required />
+      <label>Регион</label>
+      <input type="text" id="reg-region" placeholder="Москва" />
+      <button type="submit" class="btn-primary">Зарегистрироваться</button>
+    </form>
+  </section>
+
+  <!-- CATALOG -->
+  <section id="catalog">
+    <h2>Каталог растений</h2>
+    <div class="filters">
+      <div>
+        <label>Тип</label>
+        <input type="text" id="filter-type" placeholder="тропическое, кактус, ..." />
+      </div>
+      <div>
+        <label>Регион</label>
+        <input type="text" id="filter-region" placeholder="Москва..." />
+      </div>
+      <button class="btn-primary" onclick="loadCatalog()">Найти</button>
+    </div>
+    <div id="catalog-list"></div>
+  </section>
+
+  <!-- MY PLANTS -->
+  <section id="my-plants">
+    <h2>Мои растения</h2>
+    <form id="plant-form" onsubmit="handleSavePlant(event)">
+      <h3 id="plant-form-title">Добавить растение</h3>
+      <input type="hidden" id="plant-id" />
+      <label>Название *</label>
+      <input type="text" id="plant-name" required />
+      <label>Тип</label>
+      <input type="text" id="plant-type" placeholder="тропическое, кактус, ..." />
+      <label>Описание</label>
+      <textarea id="plant-desc" rows="3"></textarea>
+      <label>Регион</label>
+      <input type="text" id="plant-region" />
+      <div style="display:flex;gap:8px">
+        <button type="submit" class="btn-primary">Сохранить</button>
+        <button type="button" class="btn-secondary" onclick="resetPlantForm()">Сбросить</button>
+      </div>
+    </form>
+    <div id="my-plants-list"></div>
+  </section>
+
+  <!-- COMPATIBLE -->
+  <section id="compatible">
+    <h2>Совместимые растения для обмена</h2>
+    <p style="margin-bottom:16px;color:#555;font-size:0.9rem">Доступные растения других пользователей</p>
+    <div id="compatible-list"></div>
+  </section>
+
+  <!-- MY SHARES -->
+  <section id="my-shares">
+    <h2>Мои запросы на обмен</h2>
+    <div class="tabs">
+      <button class="tab active" onclick="showSharesTab('outgoing', this)">Исходящие</button>
+      <button class="tab" onclick="showSharesTab('incoming', this)">Входящие</button>
+    </div>
+    <div id="shares-outgoing"></div>
+    <div id="shares-incoming" style="display:none"></div>
+  </section>
+
+  <!-- HISTORY -->
+  <section id="history">
+    <h2>История обменов</h2>
+    <div id="history-list"></div>
+  </section>
+
+  <!-- REPORTS -->
+  <section id="reports">
+    <h2>Отчёты</h2>
+    <div id="reports-summary" class="stat-grid" style="margin-bottom:24px"></div>
+    <h3 style="margin-bottom:12px;color:#2d7a2d">Топ пользователей</h3>
+    <table id="reports-users" style="margin-bottom:24px"><thead><tr><th>#</th><th>Пользователь</th><th>Регион</th><th>Обменов</th></tr></thead><tbody></tbody></table>
+    <h3 style="margin-bottom:12px;color:#2d7a2d">Популярные растения</h3>
+    <table id="reports-plants"><thead><tr><th>#</th><th>Растение</th><th>Тип</th><th>Регион</th><th>Запросов</th></tr></thead><tbody></tbody></table>
+  </section>
+
+</main>
+
+<!-- SHARE REQUEST MODAL -->
+<div id="share-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center">
+  <form style="background:#fff;padding:24px;border-radius:8px;max-width:480px;width:90%" onsubmit="handleCreateShare(event)">
+    <h3 style="margin-bottom:16px">Создать запрос на обмен</h3>
+    <input type="hidden" id="share-wanted-id" />
+    <label>Вы хотите: <strong id="share-wanted-name"></strong></label><br/><br/>
+    <label>Предложить своё растение</label>
+    <select id="share-offered-id" required></select>
+    <label>Сообщение</label>
+    <textarea id="share-message" rows="3" placeholder="Необязательно"></textarea>
+    <div style="display:flex;gap:8px">
+      <button type="submit" class="btn-primary">Отправить</button>
+      <button type="button" class="btn-secondary" onclick="closeShareModal()">Отмена</button>
+    </div>
+  </form>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
