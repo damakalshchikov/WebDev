@@ -1,0 +1,78 @@
+.hero {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  margin-bottom: 56px;
+}
+
+.heroImage {
+  width: 220px;
+  height: 260px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-card);
+}
+
+.heroText h1 {
+  font-size: 2.2rem;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.heroText p {
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.categoriesTitle {
+  font-size: 1.5rem;
+  margin-bottom: 24px;
+  color: var(--color-text);
+}
+
+.categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.categoryCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.categoryCard:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-card);
+}
+
+.categoryMaterial {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.categoryName {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    flex-direction: column;
+  }
+
+  .heroImage {
+    width: 100%;
+    height: 240px;
+  }
+}

@@ -1,0 +1,49 @@
+.title {
+  font-size: 2rem;
+  color: var(--color-accent);
+  margin-bottom: 40px;
+}
+
+.category {
+  margin-bottom: 56px;
+}
+
+.categoryTitle {
+  font-size: 1.5rem;
+  margin-bottom: 24px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid currentColor;
+}
+
+.gold {
+  color: #b8860b;
+  border-color: #b8860b;
+}
+
+.silver {
+  color: #708090;
+  border-color: #708090;
+}
+
+.platinum {
+  color: #5f6b7a;
+  border-color: #5f6b7a;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
