@@ -1,0 +1,88 @@
+.title {
+  font-size: 2rem;
+  color: var(--color-accent);
+  margin-bottom: 32px;
+}
+
+.block {
+  margin-bottom: 40px;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.blockTitle {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--color-text);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.label {
+  color: var(--color-text-muted);
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+.value {
+  color: var(--color-text);
+}
+
+.branchesTitle {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.branches {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.branch {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  font-size: 0.9rem;
+}
+
+.branchName {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--color-accent);
+}
+
+.branchInfo {
+  color: var(--color-text-muted);
+  line-height: 1.8;
+}
+
+.mapTitle {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.map {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+@media (max-width: 800px) {
+  .branches {
+    grid-template-columns: 1fr;
+  }
+}
