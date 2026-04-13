@@ -79,6 +79,13 @@ export default function Catalog() {
     setShowAddCategory(false)
   }
 
+  // Базовые категории всегда доступны (для формы и для отображения даже до загрузки товаров)
+  const BASE_CATEGORIES = [
+    { id: 'gold',     title: 'Золото' },
+    { id: 'silver',   title: 'Серебро' },
+    { id: 'platinum', title: 'Платина' },
+  ]
+
   // Категории выводятся из реальных товаров в БД — никакой потери при обновлении страницы
   const productCategoryIds = [...new Set(products.map(p => p.category).filter(Boolean))]
   const categoriesFromProducts = productCategoryIds.map(id => ({
@@ -86,13 +93,19 @@ export default function Catalog() {
     title: CATEGORY_TITLES[id] || id,
   }))
 
-  // Добавляем «временные» категории, созданные в этой сессии, у которых ещё нет товаров
-  const pendingWithoutProducts = pendingCategories.filter(
-    c => !productCategoryIds.includes(c.id)
-  )
+  // Список для отображения: все категории из БД + базовые, которых нет в БД
+  const baseNotInDB = BASE_CATEGORIES.filter(c => !productCategoryIds.includes(c.id))
+  const displayCategories = [...categoriesFromProducts, ...baseNotInDB]
 
-  // Итоговый список категорий: из БД + временные (только для формы добавления товара)
-  const allCategories = [...categoriesFromProducts, ...pendingWithoutProducts]
+  // Временные категории этой сессии, у которых ещё нет товаров
+  const allKnownIds = new Set(displayCategories.map(c => c.id))
+  const pendingWithoutProducts = pendingCategories.filter(c => !allKnownIds.has(c.id))
+
+  // Итоговый список для формы: базовые + из БД + временные (всегда есть хотя бы gold/silver/platinum)
+  const allCategories = [
+    ...displayCategories,
+    ...pendingWithoutProducts,
+  ]
 
   // Для отображения: категории с товарами видны всем; пустые — только администратору
   const categorizedProducts = allCategories.map(cat => ({
