@@ -3,10 +3,11 @@ import { useAuth } from '../context/AuthContext'
 import ProductCard from '../components/ProductCard/ProductCard'
 import styles from './Catalog.module.css'
 
-const CATEGORY_META = {
-  gold:     { title: 'Золото' },
-  silver:   { title: 'Серебро' },
-  platinum: { title: 'Платина' },
+// Названия для известных категорий
+const CATEGORY_TITLES = {
+  gold:     'Золото',
+  silver:   'Серебро',
+  platinum: 'Платина',
 }
 
 export default function Catalog() {
@@ -17,7 +18,8 @@ export default function Catalog() {
   const [successMsg, setSuccessMsg] = useState('')
   const [showAddProduct, setShowAddProduct] = useState(false)
   const [showAddCategory, setShowAddCategory] = useState(false)
-  const [extraCategories, setExtraCategories] = useState([])
+  // Временные категории, созданные в текущей сессии (до появления первого товара)
+  const [pendingCategories, setPendingCategories] = useState([])
   const [newProduct, setNewProduct] = useState({
     name: '', short_description: '', description: '', price: '',
     image: '', category: 'gold', material: '', care: '',
@@ -58,7 +60,7 @@ export default function Catalog() {
       setSuccessMsg('Товар добавлен!')
       setShowAddProduct(false)
       setNewProduct({ name: '', short_description: '', description: '', price: '', image: '', category: 'gold', material: '', care: '' })
-      fetchProducts()
+      await fetchProducts()
       setTimeout(() => setSuccessMsg(''), 3000)
     } catch (err) {
       setError(err.message)
@@ -67,19 +69,32 @@ export default function Catalog() {
 
   function handleAddCategory(e) {
     e.preventDefault()
-    if (newCategoryId.trim() && newCategoryTitle.trim()) {
-      setExtraCategories(prev => [...prev, { id: newCategoryId.trim(), title: newCategoryTitle.trim() }])
+    const id = newCategoryId.trim()
+    const title = newCategoryTitle.trim()
+    if (id && title && !pendingCategories.some(c => c.id === id)) {
+      setPendingCategories(prev => [...prev, { id, title }])
     }
     setNewCategoryId('')
     setNewCategoryTitle('')
     setShowAddCategory(false)
   }
 
-  const allCategories = [
-    ...Object.entries(CATEGORY_META).map(([id, meta]) => ({ id, title: meta.title })),
-    ...extraCategories,
-  ]
+  // Категории выводятся из реальных товаров в БД — никакой потери при обновлении страницы
+  const productCategoryIds = [...new Set(products.map(p => p.category).filter(Boolean))]
+  const categoriesFromProducts = productCategoryIds.map(id => ({
+    id,
+    title: CATEGORY_TITLES[id] || id,
+  }))
 
+  // Добавляем «временные» категории, созданные в этой сессии, у которых ещё нет товаров
+  const pendingWithoutProducts = pendingCategories.filter(
+    c => !productCategoryIds.includes(c.id)
+  )
+
+  // Итоговый список категорий: из БД + временные (только для формы добавления товара)
+  const allCategories = [...categoriesFromProducts, ...pendingWithoutProducts]
+
+  // Для отображения: категории с товарами видны всем; пустые — только администратору
   const categorizedProducts = allCategories.map(cat => ({
     ...cat,
     products: products.filter(p => p.category === cat.id),
