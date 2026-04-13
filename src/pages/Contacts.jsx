@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import styles from './Contacts.module.css'
 
 const branches = [
@@ -6,25 +8,52 @@ const branches = [
     address: 'ул. Большая Садовая, 75',
     phone: '+7 (863) 123-45-67',
     hours: ['Пн–Пт: 10:00–20:00', 'Сб–Вс: 10:00–18:00'],
-    mapQ: 'Ростов-на-Дону, Большая Садовая, 75',
   },
   {
     name: 'Салон «Северный»',
     address: 'пр. Шолохова, 100',
     phone: '+7 (863) 234-56-78',
     hours: ['Пн–Пт: 10:00–20:00', 'Сб–Вс: 10:00–18:00'],
-    mapQ: 'Ростов-на-Дону, проспект Шолохова, 100',
   },
   {
     name: 'Салон «Западный»',
     address: 'ул. Малиновского, 25',
     phone: '+7 (863) 345-67-89',
     hours: ['Пн–Пт: 10:00–20:00', 'Сб–Вс: 10:00–18:00'],
-    mapQ: 'Ростов-на-Дону, улица Малиновского, 25',
   },
 ]
 
 export default function Contacts() {
+  const { user } = useAuth()
+  const [form, setForm] = useState({ subject: '', body: '' })
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
+  const [sending, setSending] = useState(false)
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setError('')
+    setSending(true)
+    try {
+      const res = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error)
+      }
+      setSuccess(true)
+      setForm({ subject: '', body: '' })
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setSending(false)
+    }
+  }
+
   return (
     <div>
       <h1 className={styles.title}>Контакты</h1>
@@ -75,6 +104,52 @@ export default function Contacts() {
           title="Карта"
         />
       </div>
+
+      {user?.role === 'user' && (
+        <div className={styles.contactForm}>
+          <h2 className={styles.formTitle}>Напишите нам</h2>
+          {success ? (
+            <div className={styles.formSuccess}>
+              <p>Ваше сообщение отправлено! Мы ответим в ближайшее время.</p>
+              <button className={styles.resetBtn} onClick={() => setSuccess(false)}>Написать ещё</button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              {error && <div className={styles.formError}>{error}</div>}
+              <div className={styles.formField}>
+                <label className={styles.formLabel}>Тема</label>
+                <input
+                  className={styles.formInput}
+                  type="text"
+                  placeholder="Тема сообщения"
+                  value={form.subject}
+                  onChange={e => setForm(p => ({ ...p, subject: e.target.value }))}
+                />
+              </div>
+              <div className={styles.formField}>
+                <label className={styles.formLabel}>Сообщение *</label>
+                <textarea
+                  className={styles.formTextarea}
+                  placeholder="Ваше сообщение..."
+                  value={form.body}
+                  onChange={e => setForm(p => ({ ...p, body: e.target.value }))}
+                  rows={5}
+                  required
+                />
+              </div>
+              <button type="submit" className={styles.formBtn} disabled={sending}>
+                {sending ? 'Отправка...' : 'Отправить'}
+              </button>
+            </form>
+          )}
+        </div>
+      )}
+
+      {!user && (
+        <div className={styles.contactNote}>
+          <p>Войдите в аккаунт, чтобы написать нам напрямую.</p>
+        </div>
+      )}
     </div>
   )
 }

@@ -216,6 +216,70 @@
   color: var(--color-text-muted);
 }
 
+/* ── Авторизованный пользователь ── */
+
+.userActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.userName {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.actionLink {
+  height: 30px;
+  padding: 0 12px;
+  background: #f5f5f5;
+  color: var(--color-accent);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.actionLink:hover {
+  background: #ebebeb;
+}
+
+.logoutBtn {
+  height: 30px;
+  padding: 0 12px;
+  background: none;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.logoutBtn:hover {
+  background: #ffeaea;
+  color: #cc0000;
+  border-color: #ffaaaa;
+}
+
+.loginError {
+  font-size: 0.75rem;
+  color: #cc0000;
+  width: 100%;
+  order: 3;
+}
+
 @media (max-width: 600px) {
   .brandName {
     display: none;

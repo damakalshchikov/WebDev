@@ -1,8 +1,20 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import styles from './Register.module.css'
 
 export default function Register() {
+  const { register } = useAuth()
+  const navigate = useNavigate()
   const [phone, setPhone] = useState('+7')
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [consentPD, setConsentPD] = useState(false)
+  const [consentPolicy, setConsentPolicy] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   function handlePhone(e) {
     let val = e.target.value
@@ -11,35 +23,53 @@ export default function Register() {
     setPhone('+7' + digits)
   }
 
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setError('')
+
+    if (!name.trim()) return setError('Введите имя')
+    if (!/^\+7\d{10}$/.test(phone)) return setError('Введите корректный номер телефона (+7XXXXXXXXXX)')
+    if (!email.includes('@')) return setError('Введите корректный email')
+    if (password.length < 6) return setError('Пароль должен содержать не менее 6 символов')
+    if (password !== confirmPassword) return setError('Пароли не совпадают')
+    if (!consentPD) return setError('Необходимо согласие на обработку персональных данных')
+    if (!consentPolicy) return setError('Необходимо принять Политику конфиденциальности')
+
+    setLoading(true)
+    try {
+      await register(name, phone, email, password)
+      navigate('/')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className={styles.wrap}>
       <h1 className={styles.title}>Регистрация</h1>
-      <div className={styles.form}>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        {error && <div className={styles.error}>{error}</div>}
         <div className={styles.field}>
           <label className={styles.label}>Имя</label>
-          <input type="text" placeholder="Введите имя" className={styles.input} />
+          <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Введите имя" className={styles.input} required />
         </div>
         <div className={styles.field}>
           <label className={styles.label}>Номер телефона</label>
-          <input
-            type="tel"
-            value={phone}
-            onChange={handlePhone}
-            placeholder="+7XXXXXXXXXX"
-            className={styles.input}
-          />
+          <input type="tel" value={phone} onChange={handlePhone} placeholder="+7XXXXXXXXXX" className={styles.input} required />
         </div>
         <div className={styles.field}>
           <label className={styles.label}>Email</label>
-          <input type="email" placeholder="Введите email" className={styles.input} />
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Введите email" className={styles.input} required />
         </div>
         <div className={styles.field}>
           <label className={styles.label}>Пароль</label>
-          <input type="password" placeholder="Введите пароль" className={styles.input} />
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Введите пароль" className={styles.input} required />
         </div>
         <div className={styles.field}>
           <label className={styles.label}>Повторите пароль</label>
-          <input type="password" placeholder="Повторите пароль" className={styles.input} />
+          <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="Повторите пароль" className={styles.input} required />
         </div>
         <div className={styles.notice}>
           <span className={styles.noticeIcon}>🔒</span>
@@ -50,17 +80,19 @@ export default function Register() {
         </div>
 
         <label className={styles.checkLabel}>
-          <input type="checkbox" className={styles.checkbox} />
+          <input type="checkbox" className={styles.checkbox} checked={consentPD} onChange={e => setConsentPD(e.target.checked)} />
           <span>Даю согласие на <u>обработку персональных данных</u> согласно ФЗ-152 «О персональных данных»</span>
         </label>
         <label className={styles.checkLabel}>
-          <input type="checkbox" className={styles.checkbox} />
+          <input type="checkbox" className={styles.checkbox} checked={consentPolicy} onChange={e => setConsentPolicy(e.target.checked)} />
           <span>Ознакомился(-ась) с <u>Политикой конфиденциальности</u> и принимаю её условия</span>
         </label>
 
-        <button className={styles.submitBtn}>Зарегистрироваться</button>
+        <button className={styles.submitBtn} type="submit" disabled={loading}>
+          {loading ? 'Регистрация...' : 'Зарегистрироваться'}
+        </button>
         <p className={styles.hint}>Нажимая «Зарегистрироваться», вы подтверждаете согласие с условиями обработки данных.</p>
-      </div>
+      </form>
     </div>
   )
 }

@@ -1,54 +1,14 @@
 .title {
   font-size: 2rem;
   color: var(--color-accent);
-  margin-bottom: 40px;
+  margin-bottom: 8px;
 }
 
-.category {
-  margin-bottom: 56px;
+.subtitle {
+  color: var(--color-text-muted);
+  margin-bottom: 32px;
+  font-size: 0.95rem;
 }
-
-.categoryTitle {
-  font-size: 1.5rem;
-  margin-bottom: 24px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid currentColor;
-}
-
-.gold {
-  color: #b8860b;
-  border-color: #b8860b;
-}
-
-.silver {
-  color: #708090;
-  border-color: #708090;
-}
-
-.platinum {
-  color: #5f6b7a;
-  border-color: #5f6b7a;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 560px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ── Состояния ── */
 
 .loading {
   color: var(--color-text-muted);
@@ -75,27 +35,11 @@
   font-size: 0.9rem;
 }
 
-.empty {
-  color: var(--color-text-muted);
-  font-size: 0.9rem;
-}
-
-.emptyCategory {
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
-  font-style: italic;
-}
-
-/* ── Панель администратора ── */
-
 .adminBar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
-.adminBtn {
+.addBtn {
   padding: 8px 18px;
   background: var(--color-accent);
   color: #fff;
@@ -107,11 +51,11 @@
   transition: background 0.2s;
 }
 
-.adminBtn:hover {
+.addBtn:hover {
   background: var(--color-accent-hover);
 }
 
-.adminForm {
+.addForm {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -120,8 +64,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-width: 560px;
-  box-shadow: var(--shadow-card);
+  max-width: 500px;
 }
 
 .formTitle {
@@ -161,17 +104,6 @@
   border-color: var(--color-accent);
 }
 
-.formSelect {
-  height: 36px;
-  padding: 0 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-family: var(--font-body);
-  outline: none;
-  background: #fff;
-}
-
 .formActions {
   display: flex;
   gap: 10px;
@@ -209,7 +141,113 @@
   background: #f0f0f0;
 }
 
-.customCategory {
-  color: #5f6b7a;
-  border-color: #5f6b7a;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.cardIcon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.cardName {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.cardPrice {
+  font-size: 1.4rem;
+  color: var(--color-accent);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.cardDesc {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.cardActions {
+  margin-top: auto;
+  width: 100%;
+}
+
+.reserveBtn {
+  width: 100%;
+  padding: 10px;
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  transition: background 0.2s;
+}
+
+.reserveBtn:hover {
+  background: var(--color-accent-hover);
+}
+
+.deleteBtn {
+  width: 100%;
+  padding: 10px;
+  background: #cc0000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  transition: background 0.2s;
+}
+
+.deleteBtn:hover {
+  background: #aa0000;
+}
+
+.loginNote {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.empty {
+  color: var(--color-text-muted);
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
