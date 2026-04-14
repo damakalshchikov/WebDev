@@ -4,6 +4,7 @@ const cors = require('cors')
 
 const authRoutes = require('./routes/auth')
 const productsRoutes = require('./routes/products')
+const categoriesRoutes = require('./routes/categories')
 const reviewsRoutes = require('./routes/reviews')
 const messagesRoutes = require('./routes/messages')
 const giftCardsRoutes = require('./routes/giftCards')
@@ -30,6 +31,7 @@ app.use(session({
 
 app.use('/api/auth', authRoutes)
 app.use('/api/products', productsRoutes)
+app.use('/api/categories', categoriesRoutes)
 app.use('/api/reviews', reviewsRoutes)
 app.use('/api/messages', messagesRoutes)
 app.use('/api/gift-cards', giftCardsRoutes)

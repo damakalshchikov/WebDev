@@ -3,32 +3,24 @@ import { useAuth } from '../context/AuthContext'
 import ProductCard from '../components/ProductCard/ProductCard'
 import styles from './Catalog.module.css'
 
-// Названия для известных категорий
-const CATEGORY_TITLES = {
-  gold:     'Золото',
-  silver:   'Серебро',
-  platinum: 'Платина',
-}
-
 export default function Catalog() {
   const { user } = useAuth()
   const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [showAddProduct, setShowAddProduct] = useState(false)
   const [showAddCategory, setShowAddCategory] = useState(false)
-  // Временные категории, созданные в текущей сессии (до появления первого товара)
-  const [pendingCategories, setPendingCategories] = useState([])
   const [newProduct, setNewProduct] = useState({
     name: '', short_description: '', description: '', price: '',
-    image: '', category: 'gold', material: '', care: '',
+    image: '', category: '', material: '', care: '',
   })
   const [newCategoryId, setNewCategoryId] = useState('')
   const [newCategoryTitle, setNewCategoryTitle] = useState('')
 
   useEffect(() => {
-    fetchProducts()
+    Promise.all([fetchProducts(), fetchCategories()]).finally(() => setLoading(false))
   }, [])
 
   async function fetchProducts() {
@@ -38,8 +30,19 @@ export default function Catalog() {
       setProducts(Array.isArray(data) ? data : [])
     } catch {
       setError('Ошибка загрузки товаров')
-    } finally {
-      setLoading(false)
+    }
+  }
+
+  async function fetchCategories() {
+    try {
+      const res = await fetch('/api/categories')
+      const data = await res.json()
+      if (Array.isArray(data)) {
+        setCategories(data)
+        setNewProduct(p => ({ ...p, category: p.category || data[0]?.id || '' }))
+      }
+    } catch {
+      setError('Ошибка загрузки категорий')
     }
   }
 
@@ -59,7 +62,7 @@ export default function Catalog() {
       }
       setSuccessMsg('Товар добавлен!')
       setShowAddProduct(false)
-      setNewProduct({ name: '', short_description: '', description: '', price: '', image: '', category: 'gold', material: '', care: '' })
+      setNewProduct({ name: '', short_description: '', description: '', price: '', image: '', category: categories[0]?.id || '', material: '', care: '' })
       await fetchProducts()
       setTimeout(() => setSuccessMsg(''), 3000)
     } catch (err) {
@@ -67,48 +70,32 @@ export default function Catalog() {
     }
   }
 
-  function handleAddCategory(e) {
+  async function handleAddCategory(e) {
     e.preventDefault()
-    const id = newCategoryId.trim()
-    const title = newCategoryTitle.trim()
-    if (id && title && !pendingCategories.some(c => c.id === id)) {
-      setPendingCategories(prev => [...prev, { id, title }])
+    setError('')
+    try {
+      const res = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ id: newCategoryId.trim(), title: newCategoryTitle.trim() }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Ошибка создания категории')
+      }
+      await fetchCategories()
+      setNewCategoryId('')
+      setNewCategoryTitle('')
+      setShowAddCategory(false)
+      setSuccessMsg('Категория добавлена!')
+      setTimeout(() => setSuccessMsg(''), 3000)
+    } catch (err) {
+      setError(err.message)
     }
-    setNewCategoryId('')
-    setNewCategoryTitle('')
-    setShowAddCategory(false)
   }
 
-  // Базовые категории всегда доступны (для формы и для отображения даже до загрузки товаров)
-  const BASE_CATEGORIES = [
-    { id: 'gold',     title: 'Золото' },
-    { id: 'silver',   title: 'Серебро' },
-    { id: 'platinum', title: 'Платина' },
-  ]
-
-  // Категории выводятся из реальных товаров в БД — никакой потери при обновлении страницы
-  const productCategoryIds = [...new Set(products.map(p => p.category).filter(Boolean))]
-  const categoriesFromProducts = productCategoryIds.map(id => ({
-    id,
-    title: CATEGORY_TITLES[id] || id,
-  }))
-
-  // Список для отображения: все категории из БД + базовые, которых нет в БД
-  const baseNotInDB = BASE_CATEGORIES.filter(c => !productCategoryIds.includes(c.id))
-  const displayCategories = [...categoriesFromProducts, ...baseNotInDB]
-
-  // Временные категории этой сессии, у которых ещё нет товаров
-  const allKnownIds = new Set(displayCategories.map(c => c.id))
-  const pendingWithoutProducts = pendingCategories.filter(c => !allKnownIds.has(c.id))
-
-  // Итоговый список для формы: базовые + из БД + временные (всегда есть хотя бы gold/silver/platinum)
-  const allCategories = [
-    ...displayCategories,
-    ...pendingWithoutProducts,
-  ]
-
-  // Для отображения: категории с товарами видны всем; пустые — только администратору
-  const categorizedProducts = allCategories.map(cat => ({
+  const categorizedProducts = categories.map(cat => ({
     ...cat,
     products: products.filter(p => p.category === cat.id),
   })).filter(cat => cat.products.length > 0 || user?.role === 'admin')
@@ -168,7 +155,7 @@ export default function Catalog() {
           <input className={styles.formInput} type="number" min="0" step="0.01" placeholder="Цена (₽) *" value={newProduct.price} onChange={e => setNewProduct(p => ({ ...p, price: e.target.value }))} required />
           <input className={styles.formInput} placeholder="URL изображения" value={newProduct.image} onChange={e => setNewProduct(p => ({ ...p, image: e.target.value }))} />
           <select className={styles.formSelect} value={newProduct.category} onChange={e => setNewProduct(p => ({ ...p, category: e.target.value }))}>
-            {allCategories.map(cat => (
+            {categories.map(cat => (
               <option key={cat.id} value={cat.id}>{cat.title}</option>
             ))}
           </select>

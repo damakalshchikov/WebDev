@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Таблица товаров
 CREATE TABLE IF NOT EXISTS products (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     short_description TEXT,
     description TEXT,
     price DECIMAL(12, 2) NOT NULL,
@@ -81,6 +81,19 @@ CREATE TABLE IF NOT EXISTS gift_card_reservations (
     created_at TIMESTAMP DEFAULT NOW(),
     UNIQUE(gift_card_id, user_id)
 );
+
+-- Таблица категорий
+CREATE TABLE IF NOT EXISTS categories (
+    id VARCHAR(50) PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+INSERT INTO categories (id, title) VALUES
+('gold', 'Золото'),
+('silver', 'Серебро'),
+('platinum', 'Платина')
+ON CONFLICT DO NOTHING;
 
 -- Наполнение товарами
 INSERT INTO products (name, short_description, description, price, image, available, category, material, care) VALUES
