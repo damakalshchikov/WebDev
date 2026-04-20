@@ -1,0 +1,253 @@
+.title {
+  font-size: 2rem;
+  color: var(--color-accent);
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  margin-bottom: 32px;
+  font-size: 0.95rem;
+}
+
+.loading {
+  color: var(--color-text-muted);
+  padding: 20px 0;
+}
+
+.error {
+  background: #ffeaea;
+  border: 1px solid #ffaaaa;
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: #cc0000;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+.success {
+  background: #e8f8e8;
+  border: 1px solid #aaddaa;
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: #2d7a2d;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+.adminBar {
+  margin-bottom: 20px;
+}
+
+.addBtn {
+  padding: 8px 18px;
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  transition: background 0.2s;
+}
+
+.addBtn:hover {
+  background: var(--color-accent-hover);
+}
+
+.addForm {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 500px;
+}
+
+.formTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  margin: 0;
+}
+
+.formInput {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.formInput:focus {
+  border-color: var(--color-accent);
+}
+
+.formTextarea {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.formTextarea:focus {
+  border-color: var(--color-accent);
+}
+
+.formActions {
+  display: flex;
+  gap: 10px;
+}
+
+.saveBtn {
+  padding: 8px 18px;
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  transition: background 0.2s;
+}
+
+.saveBtn:hover {
+  background: var(--color-accent-hover);
+}
+
+.cancelBtn {
+  padding: 8px 14px;
+  background: none;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  transition: background 0.2s;
+}
+
+.cancelBtn:hover {
+  background: #f0f0f0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.cardIcon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.cardName {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.cardPrice {
+  font-size: 1.4rem;
+  color: var(--color-accent);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.cardDesc {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.cardActions {
+  margin-top: auto;
+  width: 100%;
+}
+
+.reserveBtn {
+  width: 100%;
+  padding: 10px;
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  transition: background 0.2s;
+}
+
+.reserveBtn:hover {
+  background: var(--color-accent-hover);
+}
+
+.deleteBtn {
+  width: 100%;
+  padding: 10px;
+  background: #cc0000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  transition: background 0.2s;
+}
+
+.deleteBtn:hover {
+  background: #aa0000;
+}
+
+.loginNote {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.empty {
+  color: var(--color-text-muted);
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

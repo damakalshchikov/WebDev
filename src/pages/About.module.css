@@ -1,0 +1,83 @@
+.intro {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  margin-bottom: 48px;
+}
+
+.aboutImage {
+  width: 180px;
+  height: 210px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-card);
+}
+
+.introText h1 {
+  font-size: 2rem;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.introText p {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.timelineTitle {
+  font-size: 1.5rem;
+  margin-bottom: 24px;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-left: 2px solid var(--color-border);
+  padding-left: 24px;
+  margin-left: 12px;
+}
+
+.timelineItem {
+  position: relative;
+  padding-bottom: 32px;
+}
+
+.timelineItem::before {
+  content: '';
+  position: absolute;
+  left: -32px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid var(--color-bg);
+  outline: 2px solid var(--color-accent);
+}
+
+.year {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  color: var(--color-accent);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.timelineText {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 640px) {
+  .intro {
+    flex-direction: column;
+  }
+
+  .aboutImage {
+    width: 100%;
+    height: 240px;
+  }
+}
