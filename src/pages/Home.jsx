@@ -21,7 +21,7 @@ export default function Home() {
     <div>
       <section className={styles.hero}>
         <div className={styles.heroSlider}>
-          <Slider images={['/images/shop.png', '/images/shop2.png', '/images/shop3.png']} alt="Ювелирный магазин" interval={5000} />
+          <Slider images={['/images/shop-1.png', '/images/shop-2.png', '/images/shop-3.png']} alt="Ювелирный магазин" interval={5000} />
         </div>
         <div className={styles.heroText}>
           <h1>Добро пожаловать в ДИАМАНД</h1>
