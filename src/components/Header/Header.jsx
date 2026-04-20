@@ -76,7 +76,7 @@ function SearchBar() {
               {user?.role === 'user' && (
                 <button
                   className={styles.dropdownCartBtn}
-                  onClick={e => { e.stopPropagation(); addToCart({ id: p.id, name: p.name, price: p.price, image: p.image }) }}
+                  onClick={e => { e.stopPropagation(); addToCart({ id: p.id, name: p.name, price: p.price, image: p.images?.[0] || p.image }) }}
                 >
                   В корзину
                 </button>

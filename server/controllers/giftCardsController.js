@@ -87,4 +87,39 @@ async function getUserReservations(req, res) {
   }
 }
 
-module.exports = { getAll, create, remove, reserve, getUserReservations }
+async function getAllReservations(req, res) {
+  try {
+    const result = await pool.query(
+      `SELECT gcr.id, gcr.status, gc.name AS card_name, gc.price, u.name AS user_name, u.email AS user_email, gcr.created_at AS reserved_at
+       FROM gift_card_reservations gcr
+       JOIN gift_cards gc ON gcr.gift_card_id = gc.id
+       JOIN users u ON gcr.user_id = u.id
+       ORDER BY gcr.created_at DESC`
+    )
+    res.json(result.rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Ошибка сервера' })
+  }
+}
+
+async function updateReservationStatus(req, res) {
+  try {
+    const { id } = req.params
+    const { status } = req.body
+    if (!['confirmed', 'rejected'].includes(status)) {
+      return res.status(400).json({ error: 'Недопустимый статус' })
+    }
+    const result = await pool.query(
+      'UPDATE gift_card_reservations SET status = $1 WHERE id = $2 RETURNING *',
+      [status, id]
+    )
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Резервация не найдена' })
+    res.json(result.rows[0])
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Ошибка сервера' })
+  }
+}
+
+module.exports = { getAll, create, remove, reserve, getUserReservations, getAllReservations, updateReservationStatus }

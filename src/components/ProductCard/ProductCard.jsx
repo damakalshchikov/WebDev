@@ -11,7 +11,7 @@ export default function ProductCard({ id, image, images = [], name, price, descr
 
   function handleAddToCart(e) {
     e.preventDefault()
-    addToCart({ id, name, price, image })
+    addToCart({ id, name, price, image: images[0] || image })
   }
 
   return (

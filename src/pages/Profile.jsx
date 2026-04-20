@@ -8,6 +8,8 @@ export default function Profile() {
   const navigate = useNavigate()
   const [reservations, setReservations] = useState([])
   const [pendingReviews, setPendingReviews] = useState([])
+  const [allReservations, setAllReservations] = useState([])
+  const [orders, setOrders] = useState([])
   const [dataLoading, setDataLoading] = useState(true)
 
   useEffect(() => {
@@ -29,11 +31,14 @@ export default function Profile() {
           }
         }
         if (user.role === 'admin') {
-          const res = await fetch('/api/reviews/pending', { credentials: 'include' })
-          if (res.ok) {
-            const data = await res.json()
-            setPendingReviews(data)
-          }
+          const [reviewsRes, reservationsRes, ordersRes] = await Promise.all([
+            fetch('/api/reviews/pending', { credentials: 'include' }),
+            fetch('/api/gift-cards/all-reservations', { credentials: 'include' }),
+            fetch('/api/messages', { credentials: 'include' }),
+          ])
+          if (reviewsRes.ok) setPendingReviews(await reviewsRes.json())
+          if (reservationsRes.ok) setAllReservations(await reservationsRes.json())
+          if (ordersRes.ok) setOrders(await ordersRes.json())
         }
       } finally {
         setDataLoading(false)
@@ -42,6 +47,30 @@ export default function Profile() {
 
     loadData()
   }, [user])
+
+  async function handleOrderStatus(id, status) {
+    const res = await fetch(`/api/messages/${id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ status }),
+    })
+    if (res.ok) {
+      setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o))
+    }
+  }
+
+  async function handleReservationStatus(id, status) {
+    const res = await fetch(`/api/gift-cards/reservations/${id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ status }),
+    })
+    if (res.ok) {
+      setAllReservations(prev => prev.map(r => r.id === id ? { ...r, status } : r))
+    }
+  }
 
   if (loading || dataLoading) {
     return <div className={styles.loading}>Загрузка...</div>
@@ -119,6 +148,69 @@ export default function Profile() {
               {pendingReviews.length} отзыв(ов) ожидают одобрения.{' '}
               <Link to="/reviews" className={styles.link}>Перейти к отзывам</Link>
             </p>
+          )}
+        </div>
+      )}
+
+      {user.role === 'admin' && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Заказы из корзины</h2>
+          {orders.length === 0 ? (
+            <p className={styles.empty}>Нет заказов.</p>
+          ) : (
+            <div className={styles.cardList}>
+              {orders.map(o => (
+                <div key={o.id} className={styles.reservationCard}>
+                  <div className={styles.cardName}>{o.sender_name} — {o.sender_email}</div>
+                  <div className={styles.cardDesc} style={{ whiteSpace: 'pre-line' }}>{o.body}</div>
+                  <div className={styles.reservedAt}>
+                    {new Date(o.created_at).toLocaleDateString('ru-RU')}
+                  </div>
+                  {o.status === 'pending' ? (
+                    <div className={styles.statusActions}>
+                      <button className={styles.confirmBtn} onClick={() => handleOrderStatus(o.id, 'confirmed')}>Подтвердить</button>
+                      <button className={styles.rejectBtn} onClick={() => handleOrderStatus(o.id, 'rejected')}>Отклонить</button>
+                    </div>
+                  ) : (
+                    <div className={`${styles.statusBadge} ${styles[o.status]}`}>
+                      {o.status === 'confirmed' ? 'Подтверждён' : 'Отклонён'}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {user.role === 'admin' && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Резервации подарочных карт</h2>
+          {allReservations.length === 0 ? (
+            <p className={styles.empty}>Нет резерваций.</p>
+          ) : (
+            <div className={styles.cardList}>
+              {allReservations.map(r => (
+                <div key={r.id} className={styles.reservationCard}>
+                  <div className={styles.cardName}>{r.card_name}</div>
+                  <div className={styles.cardPrice}>{Number(r.price).toLocaleString('ru-RU')} ₽</div>
+                  <div className={styles.cardDesc}>{r.user_name} — {r.user_email}</div>
+                  <div className={styles.reservedAt}>
+                    Зарезервировано: {new Date(r.reserved_at).toLocaleDateString('ru-RU')}
+                  </div>
+                  {r.status === 'pending' ? (
+                    <div className={styles.statusActions}>
+                      <button className={styles.confirmBtn} onClick={() => handleReservationStatus(r.id, 'confirmed')}>Подтвердить</button>
+                      <button className={styles.rejectBtn} onClick={() => handleReservationStatus(r.id, 'rejected')}>Отклонить</button>
+                    </div>
+                  ) : (
+                    <div className={`${styles.statusBadge} ${styles[r.status]}`}>
+                      {r.status === 'confirmed' ? 'Подтверждена' : 'Отклонена'}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}

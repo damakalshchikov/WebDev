@@ -63,7 +63,7 @@ export default function ProductDetail() {
   }
 
   function handleAddToCart() {
-    addToCart({ id: product.id, name: product.name, price: product.price, image: product.image })
+    addToCart({ id: product.id, name: product.name, price: product.price, image: product.images?.[0] || product.image })
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 2000)
   }

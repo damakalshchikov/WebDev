@@ -140,3 +140,56 @@
   font-size: 0.95rem;
   color: var(--color-text);
 }
+
+.statusActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.confirmBtn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: var(--radius);
+  background: #2d7a2d;
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.confirmBtn:hover {
+  background: #236023;
+}
+
+.rejectBtn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: var(--radius);
+  background: #cc0000;
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.rejectBtn:hover {
+  background: #a30000;
+}
+
+.statusBadge {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.statusBadge.confirmed {
+  background: #e8f4e8;
+  color: #2d7a2d;
+}
+
+.statusBadge.rejected {
+  background: #fdecea;
+  color: #cc0000;
+}
