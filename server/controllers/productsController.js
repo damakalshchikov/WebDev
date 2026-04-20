@@ -3,21 +3,29 @@ const pool = require('../config/db')
 async function getAll(req, res) {
   try {
     const { search, category } = req.query
-    let query = 'SELECT * FROM products WHERE available = true'
+    let query = `
+      SELECT p.*,
+        COALESCE(
+          array_agg(pi.image_url ORDER BY pi.sort_order) FILTER (WHERE pi.image_url IS NOT NULL),
+          '{}'
+        ) AS images
+      FROM products p
+      LEFT JOIN product_images pi ON pi.product_id = p.id
+      WHERE p.available = true`
     const params = []
 
     if (category) {
       params.push(category)
-      query += ` AND category = $${params.length}`
+      query += ` AND p.category = $${params.length}`
     }
 
     if (search) {
       params.push(`%${search}%`)
       const idx = params.length
-      query += ` AND (name ILIKE $${idx} OR short_description ILIKE $${idx} OR description ILIKE $${idx})`
+      query += ` AND (p.name ILIKE $${idx} OR p.short_description ILIKE $${idx} OR p.description ILIKE $${idx})`
     }
 
-    query += ' ORDER BY created_at ASC, id ASC'
+    query += ' GROUP BY p.id ORDER BY p.created_at ASC, p.id ASC'
 
     const result = await pool.query(query, params)
     res.json(result.rows)
@@ -30,7 +38,18 @@ async function getAll(req, res) {
 async function getOne(req, res) {
   try {
     const { id } = req.params
-    const result = await pool.query('SELECT * FROM products WHERE id = $1', [id])
+    const result = await pool.query(
+      `SELECT p.*,
+        COALESCE(
+          array_agg(pi.image_url ORDER BY pi.sort_order) FILTER (WHERE pi.image_url IS NOT NULL),
+          '{}'
+        ) AS images
+       FROM products p
+       LEFT JOIN product_images pi ON pi.product_id = p.id
+       WHERE p.id = $1
+       GROUP BY p.id`,
+      [id]
+    )
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Товар не найден' })

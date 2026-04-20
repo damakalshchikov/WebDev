@@ -1,3 +1,4 @@
+import Slider from '../components/Slider/Slider'
 import styles from './Home.module.css'
 
 const categories = [
@@ -19,7 +20,9 @@ export default function Home() {
   return (
     <div>
       <section className={styles.hero}>
-        <img src="/images/shop.png" alt="Ювелирный магазин" className={styles.heroImage} />
+        <div className={styles.heroSlider}>
+          <Slider images={['/images/shop.png', '/images/shop2.png', '/images/shop3.png']} alt="Ювелирный магазин" interval={5000} />
+        </div>
         <div className={styles.heroText}>
           <h1>Добро пожаловать в ДИАМАНД</h1>
           <p>

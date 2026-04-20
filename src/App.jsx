@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { CartProvider } from './context/CartContext'
 import Layout from './components/Layout/Layout'
 import Home from './pages/Home'
 import About from './pages/About'
@@ -10,24 +11,28 @@ import ProductDetail from './pages/ProductDetail'
 import Reviews from './pages/Reviews'
 import Profile from './pages/Profile'
 import GiftCards from './pages/GiftCards'
+import Cart from './pages/Cart'
 
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/catalog" element={<Catalog />} />
-            <Route path="/catalog/:id" element={<ProductDetail />} />
-            <Route path="/contacts" element={<Contacts />} />
-            <Route path="/reviews" element={<Reviews />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/gift-cards" element={<GiftCards />} />
-          </Routes>
-        </Layout>
+        <CartProvider>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/catalog" element={<Catalog />} />
+              <Route path="/catalog/:id" element={<ProductDetail />} />
+              <Route path="/contacts" element={<Contacts />} />
+              <Route path="/reviews" element={<Reviews />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/gift-cards" element={<GiftCards />} />
+              <Route path="/cart" element={<Cart />} />
+            </Routes>
+          </Layout>
+        </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   )

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useCart } from '../context/CartContext'
+import Slider from '../components/Slider/Slider'
 import styles from './ProductDetail.module.css'
 
 const CATEGORY_LABELS = {
@@ -12,15 +14,14 @@ const CATEGORY_LABELS = {
 export default function ProductDetail() {
   const { id } = useParams()
   const { user } = useAuth()
+  const { addToCart } = useCart()
   const navigate = useNavigate()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(false)
   const [editForm, setEditForm] = useState({})
-  const [showFittingModal, setShowFittingModal] = useState(false)
-  const [fittingMessage, setFittingMessage] = useState('')
-  const [fittingSuccess, setFittingSuccess] = useState(false)
+  const [addedToCart, setAddedToCart] = useState(false)
 
   useEffect(() => {
     fetch(`/api/products/${id}`)
@@ -61,21 +62,10 @@ export default function ProductDetail() {
     }
   }
 
-  async function handleFitting(e) {
-    e.preventDefault()
-    const res = await fetch('/api/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({
-        subject: `Запись на примерку: ${product.name}`,
-        body: fittingMessage || `Хочу записаться на примерку украшения "${product.name}"`,
-      }),
-    })
-    if (res.ok) {
-      setFittingSuccess(true)
-      setFittingMessage('')
-    }
+  function handleAddToCart() {
+    addToCart({ id: product.id, name: product.name, price: product.price, image: product.image })
+    setAddedToCart(true)
+    setTimeout(() => setAddedToCart(false), 2000)
   }
 
   if (loading) {
@@ -126,10 +116,7 @@ export default function ProductDetail() {
 
       <div className={styles.layout}>
         <div className={styles.imageWrap}>
-          {product.image
-            ? <img src={product.image} alt={product.name} className={styles.image} />
-            : <div className={styles.noImage}>Нет фото</div>
-          }
+          <Slider images={[product.image, ...(product.images || [])]} alt={product.name} />
         </div>
         <div className={styles.info}>
           <span className={`${styles.badge} ${styles[product.category]}`}>
@@ -151,41 +138,13 @@ export default function ProductDetail() {
             </div>
           )}
           {user?.role === 'user' && (
-            <button className={styles.fittingBtn} onClick={() => setShowFittingModal(true)}>
-              Записаться на примерку
+            <button className={styles.fittingBtn} onClick={handleAddToCart}>
+              {addedToCart ? '✓ Добавлено!' : 'В корзину'}
             </button>
           )}
         </div>
       </div>
 
-      {showFittingModal && (
-        <div className={styles.modalOverlay} onClick={e => { if (e.target === e.currentTarget) { setShowFittingModal(false); setFittingSuccess(false) } }}>
-          <div className={styles.modal}>
-            <button className={styles.modalClose} onClick={() => { setShowFittingModal(false); setFittingSuccess(false) }}>✕</button>
-            {fittingSuccess ? (
-              <div className={styles.fittingSuccess}>
-                <div className={styles.successIcon}>✓</div>
-                <h3>Запрос отправлен!</h3>
-                <p>Мы свяжемся с вами для подтверждения примерки.</p>
-                <button className={styles.fittingCloseBtn} onClick={() => { setShowFittingModal(false); setFittingSuccess(false) }}>Закрыть</button>
-              </div>
-            ) : (
-              <form onSubmit={handleFitting}>
-                <h3 className={styles.modalTitle}>Записаться на примерку</h3>
-                <p className={styles.modalProduct}>Украшение: <strong>{product.name}</strong></p>
-                <textarea
-                  className={styles.fittingTextarea}
-                  placeholder="Дополнительные пожелания (необязательно)"
-                  value={fittingMessage}
-                  onChange={e => setFittingMessage(e.target.value)}
-                  rows={3}
-                />
-                <button type="submit" className={styles.fittingSubmitBtn}>Записаться</button>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

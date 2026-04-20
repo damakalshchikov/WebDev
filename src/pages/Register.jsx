@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import PrivacyModal from '../components/PrivacyModal/PrivacyModal'
 import styles from './Register.module.css'
 
 export default function Register() {
@@ -15,6 +16,7 @@ export default function Register() {
   const [consentPolicy, setConsentPolicy] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [modal, setModal] = useState(null)
 
   function handlePhone(e) {
     let val = e.target.value
@@ -81,11 +83,21 @@ export default function Register() {
 
         <label className={styles.checkLabel}>
           <input type="checkbox" className={styles.checkbox} checked={consentPD} onChange={e => setConsentPD(e.target.checked)} />
-          <span>Даю согласие на <u>обработку персональных данных</u> согласно ФЗ-152 «О персональных данных»</span>
+          <span>Даю согласие на{' '}
+            <button type="button" className={styles.docLink} onClick={() => setModal('consent')}>
+              обработку персональных данных
+            </button>{' '}
+            согласно ФЗ-152 «О персональных данных»
+          </span>
         </label>
         <label className={styles.checkLabel}>
           <input type="checkbox" className={styles.checkbox} checked={consentPolicy} onChange={e => setConsentPolicy(e.target.checked)} />
-          <span>Ознакомился(-ась) с <u>Политикой конфиденциальности</u> и принимаю её условия</span>
+          <span>Ознакомился(-ась) с{' '}
+            <button type="button" className={styles.docLink} onClick={() => setModal('policy')}>
+              Политикой конфиденциальности
+            </button>{' '}
+            и принимаю её условия
+          </span>
         </label>
 
         <button className={styles.submitBtn} type="submit" disabled={loading}>
@@ -93,6 +105,7 @@ export default function Register() {
         </button>
         <p className={styles.hint}>Нажимая «Зарегистрироваться», вы подтверждаете согласие с условиями обработки данных.</p>
       </form>
+      {modal && <PrivacyModal doc={modal} onClose={() => setModal(null)} />}
     </div>
   )
 }

@@ -61,3 +61,20 @@
   color: var(--color-text-muted);
   margin-top: auto;
 }
+
+.cartBtn {
+  display: block;
+  width: calc(100% - 2rem);
+  margin: 0 1rem 1rem;
+  padding: 0.5rem;
+  background: #b8860b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cartBtn:hover { background: #9a6f09; }

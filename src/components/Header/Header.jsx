@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useCart } from '../../context/CartContext'
 import styles from './Header.module.css'
 
 const links = [
@@ -17,6 +18,8 @@ function SearchBar() {
   const [results, setResults] = useState([])
   const searchRef = useRef(null)
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const { addToCart } = useCart()
 
   useEffect(() => {
     if (!query.trim()) {
@@ -70,6 +73,14 @@ function SearchBar() {
                 <div className={styles.dropdownName}>{p.name}</div>
                 <div className={styles.dropdownPrice}>{Number(p.price).toLocaleString('ru-RU')} ₽</div>
               </div>
+              {user?.role === 'user' && (
+                <button
+                  className={styles.dropdownCartBtn}
+                  onClick={e => { e.stopPropagation(); addToCart({ id: p.id, name: p.name, price: p.price, image: p.image }) }}
+                >
+                  В корзину
+                </button>
+              )}
             </div>
           )) : (
             <div className={styles.noResults}>Ничего не найдено</div>
@@ -133,6 +144,7 @@ function LoginForm() {
 
 function UserActions() {
   const { user, logout } = useAuth()
+  const { cartCount } = useCart()
   const navigate = useNavigate()
 
   async function handleLogout() {
@@ -144,6 +156,9 @@ function UserActions() {
     <div className={styles.userActions}>
       <span className={styles.userName}>Привет, {user.name}!</span>
       <Link to="/profile" className={styles.actionLink}>Личный кабинет</Link>
+      <Link to="/cart" className={styles.cartLink}>
+        🛒 <span className={styles.cartBadge}>{cartCount}</span>
+      </Link>
       <button onClick={handleLogout} className={styles.logoutBtn}>Выход</button>
     </div>
   )

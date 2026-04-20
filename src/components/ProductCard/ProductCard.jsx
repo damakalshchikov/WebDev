@@ -1,19 +1,34 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+import { useCart } from '../../context/CartContext'
+import Slider from '../Slider/Slider'
 import styles from './ProductCard.module.css'
 
-export default function ProductCard({ id, image, name, price, description }) {
+export default function ProductCard({ id, image, images = [], name, price, description }) {
+  const { user } = useAuth()
+  const { addToCart } = useCart()
+  const allImages = [image, ...images].filter(Boolean)
+
+  function handleAddToCart(e) {
+    e.preventDefault()
+    addToCart({ id, name, price, image })
+  }
+
   return (
-    <Link to={`/catalog/${id}`} className={styles.cardLink}>
-      <div className={styles.card}>
+    <div className={styles.card}>
+      <Link to={`/catalog/${id}`} className={styles.cardLink}>
         <div className={styles.imageWrap}>
-          <img src={image} alt={name} className={styles.image} />
+          <Slider images={allImages} alt={name} />
         </div>
         <div className={styles.body}>
           <div className={styles.name}>{name}</div>
           <div className={styles.price}>{price.toLocaleString('ru-RU')} ₽</div>
           <div className={styles.desc}>{description}</div>
         </div>
-      </div>
-    </Link>
+      </Link>
+      {user?.role === 'user' && (
+        <button className={styles.cartBtn} onClick={handleAddToCart}>В корзину</button>
+      )}
+    </div>
   )
 }

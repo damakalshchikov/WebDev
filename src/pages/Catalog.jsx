@@ -177,6 +177,7 @@ export default function Catalog() {
                 key={product.id}
                 id={product.id}
                 image={product.image}
+                images={product.images || []}
                 name={product.name}
                 price={Number(product.price)}
                 description={product.short_description || product.description}
