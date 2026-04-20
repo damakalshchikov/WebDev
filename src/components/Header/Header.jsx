@@ -68,7 +68,7 @@ function SearchBar() {
         <div className={styles.dropdown}>
           {results.length > 0 ? results.map(p => (
             <div key={p.id} className={styles.dropdownItem} onClick={() => handleSelect(p.id)}>
-              {p.image && <img src={p.image} alt={p.name} className={styles.dropdownImg} />}
+              {(p.images?.[0] || p.image) && <img src={p.images?.[0] || p.image} alt={p.name} className={styles.dropdownImg} />}
               <div className={styles.dropdownInfo}>
                 <div className={styles.dropdownName}>{p.name}</div>
                 <div className={styles.dropdownPrice}>{Number(p.price).toLocaleString('ru-RU')} ₽</div>
