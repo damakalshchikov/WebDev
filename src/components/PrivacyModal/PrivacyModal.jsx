@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import styles from './PrivacyModal.module.css'
 
 const COMPANY = 'ООО «ДИАМАНД»'
@@ -129,11 +130,34 @@ function ConsentContent() {
 }
 
 export default function PrivacyModal({ doc, onClose }) {
+  const bodyRef = useRef(null)
+
+  function handleDownload() {
+    const text = bodyRef.current?.innerText ?? ''
+    const filename = doc === 'consent'
+      ? 'Согласие_на_обработку_ПД.txt'
+      : 'Политика_конфиденциальности.txt'
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className={styles.overlay} onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div className={styles.modal}>
-        <button className={styles.close} onClick={onClose} aria-label="Закрыть">✕</button>
-        {doc === 'consent' ? <ConsentContent /> : <PolicyContent />}
+        <div className={styles.toolbar}>
+          <button className={styles.download} onClick={handleDownload} aria-label="Скачать документ">
+            ↓ Скачать
+          </button>
+          <button className={styles.close} onClick={onClose} aria-label="Закрыть">✕</button>
+        </div>
+        <div ref={bodyRef}>
+          {doc === 'consent' ? <ConsentContent /> : <PolicyContent />}
+        </div>
       </div>
     </div>
   )
